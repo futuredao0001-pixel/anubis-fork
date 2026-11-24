@@ -1,0 +1,90 @@
+# Anubis Chain subgraph starter
+
+[![CI](https://github.com/anubis-chain/subgraph-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/anubis-chain/subgraph-starter/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+Starter [The Graph](https://thegraph.com/) subgraph for **Anubis Mainnet** — clone, point at your contract, publish.
+
+Anubis is listed as a supported network: [thegraph.com/docs/en/supported-networks/anubis](https://thegraph.com/docs/en/supported-networks/anubis/).
+
+- Live explorer: [AnubisScan](https://anubisscan.io/)
+- Public RPC: `https://rpc.anubispace.org`
+- Network id in `subgraph.yaml`: `anubis` (must match The Graph registry)
+- Example contract: DAI `0x83fd06F0846d9D90B3016bF670Efe2E0B11cDe14` on chain ID `6714`
+
+A subgraph can only index **public** on-chain data. Shielded / ZK-private payloads are not visible to Indexers.
+
+## Network
+
+| Parameter | Mainnet |
+| --- | --- |
+| Registry id | `anubis` |
+| Chain ID | `6714` (`eip155:6714`) |
+| Gas token | `gasDAI` |
+| RPC | `https://rpc.anubispace.org` |
+| Explorer | `https://anubisscan.io/` |
+
+Studio playground testing is not available for Anubis. Validate locally or publish to The Graph Network.
+
+## Quick start
+
+```sh
+npm ci
+npm run codegen
+npm run build
+```
+
+Point `subgraph.yaml` at your contract address, ABI, and **start block** (the deployment block on [AnubisScan](https://anubisscan.io/)).
+
+> The checked-in example uses DAI `0x83fd06…` with `startBlock: 1` only as a placeholder so `graph build` works. For any real subgraph, set `startBlock` to the contract’s deployment block — indexing from block 1 on a busy chain wastes Indexer time and money.
+
+Initialize a new project with Graph CLI if you prefer the wizard (`ethereum` protocol, network identifier `anubis`):
+
+```sh
+npm install -g @graphprotocol/graph-cli@latest
+graph init
+```
+
+## Local Graph Node (optional)
+
+Anubis has no Studio staging, so a local node is the way to dry-run indexing. Point it at the public RPC:
+
+```yaml
+environment:
+  ethereum: "anubis:https://rpc.anubispace.org"
+```
+
+Then:
+
+```sh
+graph create --node http://localhost:8020/ anubis-subgraph-starter
+graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 anubis-subgraph-starter
+```
+
+See [graph-node](https://github.com/graphprotocol/graph-node) for the Docker stack.
+
+## Publish
+
+```sh
+graph codegen && graph build
+graph publish
+```
+
+`--protocol-network` is where The Graph protocol contracts live (Arbitrum One), not Anubis. Add curation signal so Indexers pick the subgraph up. Query URLs and API keys come from [Graph Explorer](https://thegraph.com/explorer/) and [Studio](https://thegraph.com/studio/).
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `subgraph.yaml` | Manifest (`network: anubis`) |
+| `schema.graphql` | Query entities |
+| `src/mapping.ts` | Event handlers |
+| `abis/` | Contract ABIs |
+
+## License
+
+MIT. Safe/upstream ABIs you swap in keep their original licenses.
+
+## Security
+
+Please report vulnerabilities privately as described in [SECURITY.md](SECURITY.md). Do not include exploit details or credentials in a public issue.

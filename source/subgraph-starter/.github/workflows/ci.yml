@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Codegen and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run codegen
+      - run: npm run build
+      - name: Reject legacy public explorer links
+        run: |
+          if grep -R --line-number --fixed-strings "browser.anubispace.org" README.md subgraph.yaml; then
+            echo "Use https://anubisscan.io/ for public explorer links." >&2
+            exit 1
+          fi
